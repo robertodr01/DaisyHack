@@ -1,4 +1,5 @@
 import numpy as np
+
 def rouletteWheelSelection(population: [[]], heuristic_results: [float], ):
     new_population = []
     total = sum(heuristic_results)
