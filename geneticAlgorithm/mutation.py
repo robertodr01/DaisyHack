@@ -11,4 +11,5 @@ def displacement_mutation(population: [[]], substring_length):
         substring = gene[first_index : first_index + substring_length]
         gene[first_index : first_index + substring_length] = gene[second_index : second_index + substring_length]
         gene[second_index : second_index + substring_length] = substring
+        population[i] = gene
     return population

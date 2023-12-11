@@ -1,8 +1,9 @@
 import initialize, selection, crossover, mutation
 import gym
-n_genes = 6
+import minihack
+n_genes = 2
 moves = [0, 1, 2, 3]
-gene_len = 10
+gene_len = 6
 
 def initialize_test(env):
     print(initialize.initialize_population(env, n_genes, gene_len))
@@ -15,19 +16,28 @@ def selection_test():
     print(heuristic)
     print(selection.rouletteWheelSelection(population, heuristic))
 
-def crossover_test():
-    population = initialize.initialize_population(n_genes, moves, gene_len)
+def crossover_test(env):
+    population = initialize.initialize_population(env, n_genes, gene_len, lambda x: moves)
     print(population)
     print(crossover.singlePointCrossover(population))
 
-def mutation_test():
-    population = initialize.initialize_population(n_genes, moves, gene_len)
-    print(population)
-    print(mutation.displacement_mutation(population))
+def order_crossover_test(env):
+    population = initialize.initialize_population(env, n_genes, gene_len, lambda x: moves)
+    print(population[0])
+    print(population[1])
+    population = crossover.order_crossover(population, 3)
+    print()
+    print(population[0])
+    print(population[1])
+
+def mutation_test(env):
+    population = initialize.initialize_population(env, n_genes, gene_len, lambda x: moves)
+    print(mutation.displacement_mutation(population, gene_len/2 - 1))
 
 env = gym.make(
     "MiniHack-Navigation-Custom-v0",
     observation_keys=("chars", "pixel"),
     des_file = "../complex_maze.des",
 )
-initialize_test(env)
+#crossover_test(env)
+order_crossover_test(env)

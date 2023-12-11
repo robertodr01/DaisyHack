@@ -11,9 +11,9 @@ def inizialize_gene(env: gym.Env, gene_length: int, get_available_actions: calla
         gene.append(moves[move])
     return gene
 
-def initialize_population(env: gym.Env,n_genes: int, gene_length: int, get_available_actions: callable) -> [[int]]:
+def initialize_population(env: gym.Env,n_genes: int, gene_length: int, get_available_actions: callable, prefix = []) -> [[int]]:
     population = []
     for _ in range(n_genes):
         gene = inizialize_gene(env, gene_length, get_available_actions)
-        population.append(gene)
+        population.append(prefix + gene)
     return population
