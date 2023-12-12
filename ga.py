@@ -53,14 +53,14 @@ def heuristic2(env, path):
         if done:
             return 10001
         player_location = get_player_location(game_map)
-        if manhattan_distance(player_location, target_location) < 5:
-            extra_points = 1000
+        if manhattan_distance(player_location, target_location) < 20:
+            extra_points = 1 / manhattan_distance(player_location, target_location) * 1000
         game_map = state['chars']
     player_location = get_player_location(game_map)
     points += 5 * round(20/manhattan_distance(player_location, target_location), 2)
     return points + extra_points
 
-def core(epochs, paths, substring_length, env, length_new_population = None, shuffle_size = 5, heuristic: callable = heuristic1, entropy = 0.5, prefix=[]):
+def core(epochs, paths, substring_length, env, length_new_population = None, shuffle_size = 5, heuristic: callable = heuristic1, entropy = 0.5, prefix = []):
     best_path = []
     best_points = 0
     heuristic_results = [1]*len(paths)
@@ -92,12 +92,25 @@ def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 
         observation_keys=env_opts["observation_keys"],
         des_file = env_opts["des_file"],
     )
-    epochs_unit = round(epochs/3)
-    path_unit = round(path_length/2)
-    paths = initialize.initialize_population(env, n_genes, path_unit, get_available_actions)
-    paths, prefix = core(epochs_unit, paths, substring_length, env, shuffle_size = shuffle_size,heuristic=heuristic1, entropy=0.6)
-    paths = initialize.initialize_population(env, n_genes, path_unit, get_available_actions)
-    paths, best_path = core(2 * epochs_unit, paths, substring_length, env, shuffle_size = shuffle_size, heuristic=heuristic2, entropy=0.6, prefix=prefix)
+
+    unit = 5
+    rate = 3
+    epochs_unit = round(epochs/unit)
+    path_unit = round(path_length/unit)
+    mutation_unit = round(substring_length/unit)
+    crossover_unit = round(shuffle_size/unit)
+
+    prefix = []
+    prefix_unit = []
+    h = heuristic1
+    
+    for i in range(unit):
+        prefix += prefix_unit
+        paths = initialize.initialize_population(env, n_genes, path_unit, get_available_actions)
+        paths, prefix_unit = core(epochs_unit, paths, mutation_unit, env, shuffle_size = crossover_unit, heuristic=h, entropy=0.6, prefix=prefix)
+        if i == rate - 1:
+            h = heuristic2
+    best_path = prefix_unit
     if queue:
         for path in paths:
             queue.put(prefix + path)
