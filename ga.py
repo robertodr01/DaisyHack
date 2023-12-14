@@ -60,11 +60,14 @@ def heuristic2(env, path):
     points += 5 * round(20/manhattan_distance(player_location, target_location), 2)
     return points + extra_points
 
+def h(val: bool):
+    return lambda env, path: heuristic1(env, path) + heuristic2(env, path) if val == True else heuristic2(env, path)
+
 def core(epochs, paths, substring_length, env, length_new_population = None, shuffle_size = 5, heuristic: callable = heuristic1, entropy = 0.5, prefix = []):
+    heuristic_results = [1]*len(paths)
     best_path = []
     best_points = 0
-    heuristic_results = [1]*len(paths)
-    for i in tqdm(range(epochs)):
+    for i in range(epochs):
         f = open("logs.txt", "a")
         paths = selection.rouletteWheelSelection(paths, heuristic_results, length_new_population)
         paths = crossover.singlePointCrossover(paths)
@@ -75,15 +78,18 @@ def core(epochs, paths, substring_length, env, length_new_population = None, shu
         paths = mutation.displacement_mutation(paths, substring_length)
         f.write(f"{i+1} generation: ")
         heuristic_results = []
-        for path in paths:
-            points = heuristic(env, prefix + path)
+        for i in range(len(paths)):
+            points = heuristic(env, prefix + paths[i])
             if points > best_points:
                 best_points = points
-                best_path = path
-            f.write(f"{points} ")
+                best_path = paths[i]
+            f.write(f"{round(points, 2)} ")
             heuristic_results.append(points)
         f.write(f"\n")
         f.close()
+    f = open("logs.txt", "a")
+    f.write(f"\nend generation (best genes): {best_points}\n\n")
+    f.close()
     return paths, best_path
 
 def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 5, queue=None):
@@ -94,26 +100,23 @@ def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 
     )
 
     unit = 5
-    rate = 3
+    rate = 2
     epochs_unit = round(epochs/unit)
     path_unit = round(path_length/unit)
     mutation_unit = round(substring_length/unit)
     crossover_unit = round(shuffle_size/unit)
 
     prefix = []
-    prefix_unit = []
-    h = heuristic1
-    
-    for i in range(unit):
-        prefix += prefix_unit
+
+    for i in tqdm(range(unit)):
         paths = initialize.initialize_population(env, n_genes, path_unit, get_available_actions)
-        paths, prefix_unit = core(epochs_unit, paths, mutation_unit, env, shuffle_size = crossover_unit, heuristic=h, entropy=0.6, prefix=prefix)
-        if i == rate - 1:
-            h = heuristic2
-    best_path = prefix_unit
+        paths, best_path = core(epochs_unit, paths, mutation_unit, env, shuffle_size = crossover_unit, heuristic=h(i <= rate), entropy=0.6, prefix=prefix)
+        if i < unit - 1:
+            prefix += best_path
+
     if queue:
         for path in paths:
             queue.put(prefix + path)
         queue.put(prefix + best_path)
     else:
-        return [prefix + path for path in paths], prefix + best_path
+        return paths
