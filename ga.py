@@ -4,6 +4,10 @@ from geneticAlgorithm import initialize, selection, crossover, mutation
 from tqdm import tqdm
 import random
 from utilsMinihackSearch import get_player_location, get_target_location, get_valid_moves, actions_from_path, manhattan_distance, is_wall, euclidean_distance
+from logger import Logger
+
+logger = Logger()
+
 def get_wall(game_map, move):
     action_map = {
         "N": 0,
@@ -68,7 +72,6 @@ def core(epochs, paths, substring_length, env, length_new_population = None, shu
     best_path = []
     best_points = 0
     for i in range(epochs):
-        f = open("logs.txt", "a")
         paths = selection.rouletteWheelSelection(paths, heuristic_results, length_new_population)
         paths = crossover.singlePointCrossover(paths)
         if entropy > 0.5:
@@ -76,20 +79,16 @@ def core(epochs, paths, substring_length, env, length_new_population = None, shu
         else:
             paths = crossover.singlePointCrossover(paths)
         paths = mutation.displacement_mutation(paths, substring_length)
-        f.write(f"{i+1} generation: ")
         heuristic_results = []
         for i in range(len(paths)):
             points = heuristic(env, prefix + paths[i])
             if points > best_points:
                 best_points = points
                 best_path = paths[i]
-            f.write(f"{round(points, 2)} ")
-            heuristic_results.append(points)
-        f.write(f"\n")
-        f.close()
-    f = open("logs.txt", "a")
-    f.write(f"\nend generation (best genes): {best_points}\n\n")
-    f.close()
+            heuristic_results.append(round(points, 2))
+        logger.debug(f"{i+1} generation: ", end="")
+        logger.debug(f"{heuristic_results}")
+    logger.debug(f"\nend generation (best genes): {best_points}\n\n")
     return paths, best_path
 
 def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 5, queue=None):
