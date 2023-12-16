@@ -74,10 +74,10 @@ def core(epochs, paths, substring_length, env, length_new_population = None, shu
     for i in range(epochs):
         paths = selection.rouletteWheelSelection(paths, heuristic_results, length_new_population)
         paths = crossover.singlePointCrossover(paths)
-        if entropy > 0.5:
-            paths = crossover.order_crossover(paths, shuffle_size)
-        else:
-            paths = crossover.singlePointCrossover(paths)
+        #if entropy > 0.5:
+        paths = crossover.order_crossover(paths, shuffle_size)
+        #else:
+        #    paths = crossover.singlePointCrossover(paths)
         paths = mutation.displacement_mutation(paths, substring_length)
         heuristic_results = []
         for i in range(len(paths)):
@@ -88,7 +88,7 @@ def core(epochs, paths, substring_length, env, length_new_population = None, shu
             heuristic_results.append(round(points, 2))
         logger.debug(f"{i+1} generation: ", end="")
         logger.debug(f"{heuristic_results}")
-    logger.debug(f"\nend generation (best genes): {best_points}\n\n")
+    logger.debug(f"\nend generation (best genes): {best_points}\n")
     return paths, best_path
 
 def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 5, queue=None):
@@ -109,7 +109,7 @@ def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 
 
     for i in tqdm(range(unit)):
         paths = initialize.initialize_population(env, n_genes, path_unit, get_available_actions)
-        paths, best_path = core(epochs_unit, paths, mutation_unit, env, shuffle_size = crossover_unit, heuristic=h(i <= rate), entropy=0.6, prefix=prefix)
+        paths, best_path = core(epochs_unit, paths, mutation_unit, env, shuffle_size = crossover_unit, heuristic=h(i <= rate), prefix=prefix)
         if i < unit - 1:
             prefix += best_path
 
