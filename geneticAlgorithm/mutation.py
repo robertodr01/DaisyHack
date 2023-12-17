@@ -1,6 +1,6 @@
 import random
 
-def displacement_mutation(population: [[]], substring_length):
+def displacementMutation(population: [[]], substring_length):
     if len(population) < 1:
         raise ValueError()
     length = len(population[0]) - substring_length

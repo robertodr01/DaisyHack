@@ -15,8 +15,9 @@ def singlePointCrossover(population: [[]]):
         population[i+1] = newSecondGene
     return population
  
-def order_crossover(population: [[]], shuffle_size=5):
-    length =  len(population) - 1 if len(population) % 2 != 0 else len(population) 
+def orderCrossover(population: [[]], shuffle_size=5):
+    #shuffle_size = shuffle_size #round(len(population[0]) / 2)
+    length =  len(population) - 1 if len(population) % 2 != 0 else len(population)
     for i in range(0, length, 2):
         firstGene = population[i]
         secondGene = population[i+1]
@@ -29,14 +30,17 @@ def order_crossover(population: [[]], shuffle_size=5):
         newFirstGene = copy.deepcopy(firstGene)
         newSecondGene = copy.deepcopy(secondGene)
 
+
         for j in bit_mask:
             newFirstGene[j] = secondGene[j]
         for j in inverse_bit_mask:
             newSecondGene[j] = firstGene[j]
+
         for j, k in zip(inverse_bit_mask, bit_mask):
             newFirstGene[j] = firstGene[k]
         for j, k in zip(inverse_bit_mask, bit_mask):
             newSecondGene[k] = secondGene[j]
+
 
         population[i] = newFirstGene
         population[i+1] = newSecondGene
