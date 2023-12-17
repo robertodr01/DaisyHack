@@ -104,7 +104,7 @@ def ga(env_opts, n_genes, path_length, epochs, substring_length, shuffle_size = 
 
     for i in range(unit):
         paths = initialize.initialize_population(env, n_genes, path_unit, get_available_actions)
-        paths, best_path = core(epochs_unit, paths, mutation_unit, env, heuristic=h(True), shuffle_size=shuffle_unit, prefix=prefix)
+        paths, best_path = core(epochs_unit, paths, mutation_unit, env, heuristic=h(i < rate), shuffle_size=shuffle_unit, prefix=prefix)
         if i < unit - 1:
             prefix += best_path
 
