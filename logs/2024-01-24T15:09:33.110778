@@ -1,0 +1,25 @@
+1 generation: [87.61, 112.0, 93.66, 112.0]
+2 generation: [87.61, 87.61, 87.61, 107.0]
+
+end generation (best genes): 112.0
+
+1 generation: [112.0, 160.15, 112.0, 112.0]
+2 generation: [101.0, 116.0, 103.0, 160.15]
+
+end generation (best genes): 160.15
+
+1 generation: [93.61, 160.15, 160.15, 99.66]
+2 generation: [160.15, 91.61, 141.5, 139.5]
+
+end generation (best genes): 160.15
+
+1 generation: [91.66, 157.15, 84.61, 91.66]
+2 generation: [110.0, 122.22, 84.61, 137.5]
+
+end generation (best genes): 157.15
+
+1 generation: [110.0, 157.15, 100.0, 91.66]
+2 generation: [91.66, 84.61, 122.22, 100.0]
+
+end generation (best genes): 157.15
+
